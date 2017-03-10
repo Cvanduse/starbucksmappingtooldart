@@ -10,6 +10,7 @@ library(leaflet)
 
 #set working directory
 setwd("C:/Users/cvandusen/desktop")
+setwd("~/Library/Mobile\ Documents/com~apple~CloudDocs/R/Chris/starbucksmappingtooldart")
 getwd()
 
 #name csv file as my data
@@ -35,11 +36,11 @@ State <- joined %>%
 
 test <- leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
-  addMarkers(State$longitude, State$latitude, popup=State$Name) 
+  addMarkers(State$longitude, State$latitude,
+              popup = paste( "Name:", State$Name, "<br>",
+              "Client:", State$Client, "<br>"))
 
 test
-
-
 
 #Demo of leaflet
 m <- leaflet() %>%
