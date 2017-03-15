@@ -53,28 +53,36 @@ data1 <- mappingdata2 %>%
 State <- joined %>%
   filter(State == "WA")
 
+# Not sue if this is necessary
+State1 <- State %>% group_by(Client)
+
 test <- leaflet() %>% addTiles() %>%
   addEasyButton(easyButton(
     icon="fa-globe", title="Zoom to Level 1",
     onClick=JS("function(btn, map){ map.setZoom(3); }"))) %>%
   addMarkers(State$longitude, State$latitude,
-             popup = paste( "Name:", State$Name))
+             popup = paste( "Name:", State$Name),
+             popup = )
 
 test
 
-outline <- status[chull(State$longitude, State$latitude),]
 
-map <- leaflet(status) %>%
-  # Base groups
-  addTiles(group = "OSM (default)") %>%
-  # Overlay groups
-  addCircles(data = State$Status, lng = ~long, lat = ~lat,
-             fill = F, weight = 2, color = "#FFFFCC", group = "CLIENT") %>%
-  addPolygons(data = State$Status, lng = ~long, lat = ~lat,
-              fill = F, weight = 2, color = "#FFFFCC", group = "PROSPECT") %>%
-  # Layers control
-  addLayersControl(
-    overlayGroups = c("CLIENT", "PROSPECT"),
-    options = layersControlOptions(collapsed = FALSE)
+# Colored label -----------------------------------------------------------
+leafIcons <- icons(
+  iconUrl = ifelse(State1$Client == "PROSPECT",
+                   "http://leafletjs.com/examples/custom-icons/leaf-green.png",
+                   "http://leafletjs.com/examples/custom-icons/leaf-red.png"
+  ),
+  iconWidth = 38, iconHeight = 95,
+  iconAnchorX = 22, iconAnchorY = 94,
+  shadowUrl = "http://leafletjs.com/examples/custom-icons/leaf-shadow.png",
+  shadowWidth = 50, shadowHeight = 64,
+  shadowAnchorX = 4, shadowAnchorY = 62
+)
+
+leaflet(State1) %>% addTiles() %>%
+  addMarkers(
+    State1$longitude, State1$latitude,
+    icon = ~leafIcons
   )
-map
+
