@@ -10,7 +10,6 @@ library(leaflet)
 
 #set working directory
 setwd("C:/Users/cvandusen/desktop")
-setwd("~/Library/Mobile\ Documents/com~apple~CloudDocs/R/Chris/starbucksmappingtooldart")
 getwd()
 
 #To Clear working environment
@@ -51,8 +50,7 @@ mappingdata2 <- mappingdata %>%
 data1 <- mappingdata2 %>%
   select(`Street Combined`,`City`,`Country Subdivision`,`Postal Code`)
 State <- joined %>%
-  filter(State == "WA")
-
+  filter(State == "AL"|State == "AK"| State == "AZ" | State == "AR"|State == "CA"| State == "CO" |State == "CT"| State == "DE" | State == "FL"|State == "GA"| State == "HI" | State == "ID"|State == "IL"| State == "IN" |State == "IA"| State == "KS" | State == "KY"|State == "LA"| State == "ME"| State == "MD" | State == "MA"|State == "MI"| State == "MN" |State == "MS"| State == "MO" | State == "MT"|State == "NE"| State == "NV" | State == "NH"|State == "NJ"| State == "NM" |State == "NY"| State == "NC" | State == "KY"|State == "ND"| State == "OH"|State == "OK"| State == "OR" | State == "PA"|State == "RI"| State == "SC" | State == "SD"|State == "TN"| State == "TX" |State == "UT"| State == "VT" | State == "VA"|State == "WA"| State == "WV"| State == "WI" | State == "WY")
 # Not sue if this is necessary
 State1 <- State %>% group_by(Client)
 
@@ -67,22 +65,29 @@ test <- leaflet() %>% addTiles() %>%
 test
 
 
+
+
 # Colored label -----------------------------------------------------------
 leafIcons <- icons(
   iconUrl = ifelse(State1$Client == "PROSPECT",
-                   "http://leafletjs.com/examples/custom-icons/leaf-green.png",
-                   "http://leafletjs.com/examples/custom-icons/leaf-red.png"
+                   "C:/Users/cvandusen/desktop/dartblack.png",
+                   "C:/Users/cvandusen/desktop/dartred.png"
   ),
-  iconWidth = 38, iconHeight = 95,
-  iconAnchorX = 22, iconAnchorY = 94,
-  shadowUrl = "http://leafletjs.com/examples/custom-icons/leaf-shadow.png",
+  iconWidth = 15, iconHeight = 15,
+  iconAnchorX = 22, iconAnchorY = 40,
+  shadowUrl = "",
   shadowWidth = 50, shadowHeight = 64,
   shadowAnchorX = 4, shadowAnchorY = 62
 )
 
 leaflet(State1) %>% addTiles() %>%
+  addEasyButton(easyButton(
+    icon="fa-globe", title="Zoom to Level 1",
+    onClick=JS("function(btn, map){ map.setZoom(4); }"))) %>%
   addMarkers(
     State1$longitude, State1$latitude,
-    icon = ~leafIcons
-  )
+    icon = ~leafIcons,
+    label = paste( "Name:", State$Name,"Phone:" , State$Phone),
+    popup = paste( "Name:", State$Name,"HDMA:" , State$HMDA, "Contact:", paste(State$`FIRST NAME`,State$`LAST NAME`) , "Title:", State$TITLE , "Address:" , paste(State$`Street Combined`,State$city, State$State, State$zip_code),"Phone:" , State$Phone),
+    clusterOptions = markerClusterOptions())
 
